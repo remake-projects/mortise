@@ -130,20 +130,31 @@ MORTISE_MAX_AGE_DAYS=60 MORTISE_MIN_DISK_FREE_GB=8 ./scripts/apply-defaults.sh
 Ayarlar **yeni eklenen** klasörlere uygulanır. Script'ten önce eklenmiş bir
 klasör varsa onu GUI'den ayrıca düzeltmek gerekir.
 
-## 6. İlk düğümü eşle
+## 6. Düğümleri kur ve hub'a bağla
 
-Hub ve laptop birbirinin device ID'sini ekler (GUI → Add Remote Device).
-Hub tarafında o cihazı işaretle:
+Her makinede:
 
-- **Introducer**: açık. Hub'ın tanıdığı diğer cihazlar yeni düğüme otomatik
-  tanıtılır — "hub'a katıl, ağdaki herkesi gör" akışı bununla çalışır.
-- **Auto Accept Folders**: açık. Bir düğümün paylaştığı yeni vault hub'da
-  elle onay beklemez. Bunun çalışması adım 5'e bağlıdır: `defaults/folder.path`
-  boşsa klasör kök dizine açılmaya çalışılır ve `mkdir /<ad>: permission
-  denied` ile sessizce düşer — cihaz bağlı görünür, klasör hiç gelmez.
+```bash
+./scripts/node-setup.sh
+```
 
-Otomatik kabul edilen klasör, adı klasörün **label**'ından alır; boşluklu
-bir label boşluklu bir dizin adı üretir.
+Sonra düğüm ile hub karşılıklı tanıtılır:
+
+- **Düğümde**, hub'ı ekle ve **Introducer** işaretle. Bu, "hub bana başka
+  cihazları tanıtabilir" demektir: ağa yeni biri katıldığında hub onu bu
+  düğüme otomatik tanıtır. Herkesin herkesle tek tek eşleşmesi bu sayede
+  gerekmez.
+  Adres statik verilir: `tcp://<hub-ip>:22000`.
+- **Hub'da**, düğümü ekle ve **Auto Accept Folders** işaretle. Düğüm bir
+  vault paylaştığında hub elle onay beklemez.
+
+`autoAcceptFolders`'ın çalışması adım 5'e bağlıdır: `defaults/folder.path`
+boşsa klasör kök dizine açılmaya çalışılır ve `mkdir /<ad>: permission
+denied` ile sessizce düşer — cihaz bağlı görünür, klasör hiç gelmez.
+
+Otomatik kabul edilen klasör adını klasörün **label**'ından alır; boşluklu
+bir label boşluklu bir dizin adı üretir (`Mortise Pilot` -> `.../Mortise Pilot`).
+Label'ı boşluksuz seçmek sonraki kabuk işlerini kolaylaştırır.
 
 ## 7. Pilot vault
 
