@@ -82,7 +82,7 @@ Doğrula: `8384` yalnızca `127.0.0.1`'e, `22000` `0.0.0.0`'a bağlı olmalı,
 `21027` hiç görünmemeli.
 
 ```bash
-docker compose port syncthing 8384
+docker compose port hub 8384
 ss -lntup | grep -E '8384|22000|21027'
 ```
 
@@ -99,7 +99,7 @@ GUI açılır açılmaz, **başka hiçbir şey yapmadan önce**:
 - **Actions → Settings → GUI** altında kullanıcı adı + güçlü parola kur.
   GUI localhost'a bağlı olsa da sunucuda ~30 container dönüyor; biri ele
   geçerse localhost artık güvenli bir sınır değil.
-Syncthing 2.x artık varsayılan `~/Sync` klasörü oluşturmuyor — silinecek
+Motorun 2.x sürümü artık varsayılan `~/Sync` klasörü oluşturmuyor — silinecek
 bir şey yok, config klasörsüz başlar.
 
 ## 5. Hub varsayılanlarını uygula — atlanamaz adım
@@ -108,16 +108,16 @@ bir şey yok, config klasörsüz başlar.
 cd /opt/mortise && ./scripts/apply-defaults.sh
 ```
 
-Syncthing'in kendi varsayılanları hub topolojisi için güvensiz; script
+Motorun kendi varsayılanları hub topolojisi için güvensiz; script
 ikisini birden düzeltir:
 
 - **staggered versioning, maxAge 30 gün.** Varsayılan bırakılırsa
   versiyonlama tamamen kapalıdır: hub'da silinen dosyanın geri dönüşü
   olmaz. Açıp sınırsız bırakmak ise ters uçta aynı derecede kötü — her
   sürüm süresiz birikir, 5 GB sessizce 15 GB olur.
-- **minDiskFree 5 GB.** Syncthing'in varsayılanı %1, yani 50 GB'lık diskte
+- **minDiskFree 5 GB.** Motorun varsayılanı %1, yani 50 GB'lık diskte
   500 MB; o eşiğe kadar yazmaya devam eder. Disk riskinin doğru sahibi
-  burasıdır — harici bir cron değil, Syncthing'in kendi mekanizması.
+  burasıdır — harici bir cron değil, motorun kendi mekanizması.
   Boş alan eşiğin altına inince klasöre yazmayı durdurur ve sunucudaki
   diğer stack'lere nefes alanı bırakır.
 
@@ -164,7 +164,7 @@ Vault köküne ignore profilini koy:
 cp profiles/obsidian.stignore /yol/vault/.stignore
 ```
 
-> **Her düğümde ayrı kurulur.** Syncthing `.stignore`'u senkronlamaz —
+> **Her düğümde ayrı kurulur.** `.stignore` senkronlanmaz —
 > `.stfolder`/`.stversions` gibi kendi iç dosyası sayar, çünkü her düğümün
 > kendi kuralları olabilir. Hub'a koymak yetmez; vault'u bağlayan her
 > düğümde ayrıca kurulmalı. Atlanan düğüm `.obsidian/workspace.json`'ı
@@ -174,14 +174,14 @@ Doğrulama: laptop'ta bir not oluştur → hub'da belirsin → hub'da düzenle �
 laptop'ta belirsin. `.obsidian/workspace.json` **iki tarafta da farklı
 kalmalı** ve çakışma dosyası doğmamalı.
 
-Bu akış 2026-09-20'de sunucuda geçici ikinci bir Syncthing düğümüyle
+Bu akış 2026-09-20'de sunucuda geçici ikinci bir düğümle
 doğrulandı: otomatik klasör kabulü, iki yönlü senkron (hub→düğüm 2 sn,
 düğüm→hub 10 sn) ve `workspace.json`'ın gerçekten dışarıda kaldığı test
 edildi.
 
 ## 8. Disk izleme
 
-Diskin asıl koruması adım 5'te kuruldu: `minDiskFree = 5 GB`. Syncthing
+Diskin asıl koruması adım 5'te kuruldu: `minDiskFree = 5 GB`. Motor
 boş alan o eşiğin altına inince klasöre yazmayı kendi durdurur — Mortise'ın
 diğer stack'leri düşürmesini bu engeller.
 
@@ -190,7 +190,7 @@ durduğunda senkron sessizce durur ve fark edilmezse günlerce öyle kalır.
 
 ```bash
 df -h /                                    # anlık
-docker exec mortise-syncthing curl -fksS \
+docker exec mortise-hub curl -fksS \
   -H "X-API-Key: $API" 127.0.0.1:8384/rest/system/error   # sessiz hatalar
 ```
 

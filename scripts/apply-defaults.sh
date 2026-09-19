@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # Hub'ın YENİ klasör varsayılanlarını uygular. Mevcut klasörlere dokunmaz.
 #
-# Syncthing'in kendi varsayılanları hub topolojisi için güvensiz:
+# Senkron motorunun kendi varsayılanları hub topolojisi için güvensiz:
 #
 #   versioning  : kapalı — hub'da silinen dosyanın geri dönüşü olmaz
-#   minDiskFree : %1     — 50 GB'lık diskte 500 MB. Syncthing bu eşiğe
+#   minDiskFree : %1     — 50 GB'lık diskte 500 MB. Motor bu eşiğe
 #                          kadar yazmaya devam eder; disk dolarsa yalnız
 #                          Mortise değil, sunucudaki bütün stack'ler düşer.
 #   path        : boş    — autoAcceptFolders ile gelen klasör kök dizine
@@ -21,11 +21,11 @@ API_URL="${MORTISE_API:-http://127.0.0.1:8384}"
 # Silinen/değiştirilen sürümlerin saklanma süresi. Üst sınırın *var olması*
 # esas; staggered zaten eskidikçe seyrekleştirir.
 MAX_AGE_DAYS="${MORTISE_MAX_AGE_DAYS:-30}"
-# Syncthing boş alan bu eşiğin altına inince klasöre yazmayı durdurur.
+# Boş alan bu eşiğin altına inince klasöre yazma durdurulur.
 MIN_DISK_FREE_GB="${MORTISE_MIN_DISK_FREE_GB:-5}"
 # autoAccept ile gelen klasörlerin açılacağı dizin (container içi yol).
 FOLDER_PATH="${MORTISE_FOLDER_PATH:-/var/syncthing/data}"
-# Dosya değişikliğinin yayılmadan önce beklediği süre. Syncthing varsayılanı
+# Dosya değişikliğinin yayılmadan önce beklediği süre. Motor varsayılanı
 # 10 sn; ortak vault'ta bu pencere iki kişinin aynı notu çakıştırması için
 # fazla geniş. Vault'lar küçük olduğu için 3 sn'nin maliyeti yok.
 FSWATCHER_DELAY_S="${MORTISE_FSWATCHER_DELAY_S:-3}"

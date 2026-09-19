@@ -1,7 +1,7 @@
 # Mortise
 
-Obsidian vault'larını kendi sunucumuz üzerinden senkronize eden, Syncthing
-tabanlı merkezi senkron kurulumu.
+Obsidian vault'larını kendi sunucumuz üzerinden senkronize eden merkezi
+senkron sistemi. Masaüstü uygulaması yok; yönetim web arayüzünden yapılır.
 
 *Mortise*, marangozlukta dişi yuva — geçmenin oturduğu yer.
 
@@ -18,12 +18,12 @@ değildir — ağdaki diğer düğümler gibi bir düğümdür, tek farkı hiç 
 
 Veri uçtan uca TLS ile taşınır ve her cihaz kendi ID'siyle doğrulanır.
 
-## Çıplak Syncthing'den farkı
+## Mortise ne ekliyor
 
-Syncthing bu topolojiyi zaten destekliyor; Mortise onu **Obsidian için
-doğru ayarlanmış** halde paketler:
+Altta çalışan senkron motoru bu topolojiyi zaten destekliyor; Mortise onu
+**Obsidian için doğru ayarlanmış** halde paketler:
 
-| | Syncthing varsayılanı | Mortise |
+| | Motor varsayılanı | Mortise |
 |---|---|---|
 | Versiyonlama | kapalı — silinen dosya geri gelmez | `staggered`, 30 gün |
 | `minDiskFree` | %1 (50 GB diskte 500 MB) | 5 GB |
@@ -56,16 +56,16 @@ GUI dışarı açılmaz; erişim SSH tüneliyle:
 ### Düğüm (macOS)
 
 Her makine kendi Mortise düğümünü çalıştırır — hub'la aynı katmanlama:
-altta Syncthing, üstünde Mortise'ın yapılandırması.
+altta senkron motoru, üstünde Mortise'ın yapılandırması.
 
 ```bash
 ./scripts/node-setup.sh
 ```
 
-Script binary'yi kurar, düğümün config'ini `~/.mortise` altına açar (bu
-makinedeki başka bir Syncthing kurulumuyla karışmasın diye), login'de
-açılan bir LaunchAgent tanımlar ve hub'dakiyle **aynı** `apply-defaults.sh`
-ile güvenli varsayılanları uygular.
+Script motoru `~/.mortise/bin/mortise` olarak kurar (paket yöneticisine
+dokunmaz), config'i `~/.mortise` altına açar, login'de açılan bir
+LaunchAgent tanımlar ve hub'dakiyle **aynı** `apply-defaults.sh` ile
+güvenli varsayılanları uygular. Servis, process ve komut adı `mortise`.
 
 Düğüm yalnızca hub ile eşleşir; hub `introducer` olduğu için ağdaki diğer
 düğümleri otomatik tanır. Herkesin herkesle tek tek eşleşmesi gerekmez.
@@ -83,8 +83,8 @@ stack'lerin yanına temassız kurulur.
 
 ## Ortak vault ve çakışma
 
-Vault ortaktır: aynı klasöre birden fazla kişi yazar. Çakışma Syncthing'in
-kusuru değil, dosya senkronunun doğasıdır — iki düğümde **aynı dosya**
+Vault ortaktır: aynı klasöre birden fazla kişi yazar. Çakışma bir kusur
+değil, dosya senkronunun doğasıdır — iki düğümde **aynı dosya**
 birbirinden habersiz değişirse satır bazlı merge yapılamaz, kaybeden taraf
 `Notum.sync-conflict-<tarih>-<cihaz>.md` olarak saklanır.
 
@@ -99,7 +99,7 @@ birbirinden habersiz değişirse satır bazlı merge yapılamaz, kaybeden taraf
 
 Mortise bunu üç şekilde ele alır:
 
-1. **`fsWatcherDelayS = 3`** (Syncthing varsayılanı 10). Değişiklik daha
+1. **`fsWatcherDelayS = 3`** (motor varsayılanı 10). Değişiklik daha
    hızlı yayılır, çakışma penceresi daralır.
 2. **Çakışma kopyaları ignore edilmez.** Ignore etmek onları yok etmez,
    yalnızca tek makinede görünmez kılar; kaybedilen düzenleme fark
@@ -118,7 +118,7 @@ düzenleme CRDT tabanlı bir sistem gerektirir.
 cp profiles/obsidian.stignore /yol/vault/.stignore
 ```
 
-**Syncthing `.stignore`'u senkronlamaz** (kendi iç dosyası sayar, çünkü her
+**`.stignore` senkronlanmaz** (motor onu kendi iç dosyası sayar, çünkü her
 düğümün kendi kuralları olabilir). Yani profili hub'a koymak yetmez —
 vault'u bağlayan **her düğümde** ayrı ayrı kurmak gerekir. Atlanırsa o
 düğüm `.obsidian/workspace.json`'ı senkronlamaya başlar ve dakikalar içinde
@@ -139,17 +139,19 @@ docs/
   fork-notes.md              upstream'den sapmaların kaydı
 ```
 
-Senkronlanan veri ve Syncthing'in kendi config'i **repo dışındadır**:
+Senkronlanan veri ve motorun kendi config'i **repo dışındadır**:
 sunucuda `/opt/mortise/{data,config}`, `.gitignore` ikinci savunma hattı.
 
 ## Durum
 
 **Faz 1 — kurulum: tamam.** Hub canlıda çalışıyor. Geçici ikinci bir
-Syncthing düğümüyle uçtan uca doğrulandı: otomatik klasör kabulü, iki yönlü
+düğümle uçtan uca doğrulandı: otomatik klasör kabulü, iki yönlü
 senkron ve ignore profilinin `workspace.json`'ı gerçekten dışarıda tuttuğu
 test edildi.
 
-**Faz 2 — web panel:** Syncthing GUI'si fork'lanıp rebrand edilecek.
+**Faz 2 — web arayüzü:** mevcut arayüz fork'lanıp Mortise'a dönüştürülecek.
+Bugün arayüzde ve motorun kendi çıktılarında upstream adı hâlâ görünür;
+bunu kaldırmak fork gerektiriyor.
 Gerekçe ve kademeli plan: [`docs/fork-notes.md`](docs/fork-notes.md).
 
 Yol haritasında: kullanıcının kendi sunucusuna kurup ağa katılmasını
@@ -157,6 +159,7 @@ kolaylaştıran eşleme akışı.
 
 ## Lisans
 
-[MPL-2.0](LICENSE) — upstream Syncthing ile aynı. Fork dağıtılırsa
+[MPL-2.0](LICENSE) — Mortise, Syncthing motoru üzerine kuruludur ve onunla
+aynı lisansı taşır. Fork dağıtılırsa
 değiştirilen mevcut dosyaların kaynağı yayınlanır; "Syncthing" adı ve
 logosu kullanılamaz.

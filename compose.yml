@@ -1,7 +1,8 @@
-# Mortise hub — VDS'te 7/24 açık Syncthing düğümü.
+# Mortise hub — VDS'te 7/24 açık düğüm.
 #
-# Bu dosya yalnızca HUB'ı tanımlar. Laptop/masaüstü düğümleri kendi yerel
-# Syncthing kurulumlarını kullanır; onlar bu compose'a dahil değil.
+# Bu dosya yalnızca HUB'ı tanımlar. Masaüstü düğümleri kendi yerel Mortise
+# kurulumlarını çalıştırır (scripts/node-setup.sh); onlar bu compose'a
+# dahil değil.
 #
 # Sunucudaki mevcut ~30 container'a dokunmaz: kendi bridge ağı, Caddy'ye
 # hiç temas yok, 80/443 kullanılmıyor.
@@ -9,11 +10,13 @@
 name: mortise
 
 services:
-  syncthing:
-    # FORK NOKTASI — Faz 2'de kendi rebrand imajımıza geçerken değişecek
-    # tek satır burası. Gerekçe ve süreç: docs/fork-notes.md
-    image: syncthing/syncthing:${SYNCTHING_VERSION:?.env icinde SYNCTHING_VERSION tanimli olmali}
-    container_name: mortise-syncthing
+  hub:
+    # FORK NOKTASI — altta çalışan senkron motoru. Faz 2'de kendi
+    # imajımıza geçerken değişecek tek satır burası; motorun adı ve
+    # sürümü .env'de MORTISE_VERSION ile tutuluyor.
+    # Gerekçe ve süreç: docs/fork-notes.md
+    image: syncthing/syncthing:${MORTISE_VERSION:?.env icinde MORTISE_VERSION tanimli olmali}
+    container_name: mortise-hub
     hostname: ${MORTISE_HOSTNAME:-mortise-hub}
     restart: unless-stopped
 
@@ -24,10 +27,12 @@ services:
       PUID: ${PUID:-1000}
       PGID: ${PGID:-1000}
 
+    # Sağdaki yollar motorun kendi sözleşmesi (imajda STHOMEDIR/HOME) —
+    # fork'a kadar sabit. Soldaki, Mortise'ın sunucudaki yerleşimi.
     volumes:
-      # Syncthing'in kendi config'i (imajda STHOMEDIR). Cihaz kimliği ve
-      # özel anahtar burada durur — yedeklenmesi gereken asıl dizin bu.
-      # Kaybolursa hub yeni bir device ID alır ve tüm eşlemeler kopar.
+      # Hub'ın kimliği: device ID ve özel anahtar burada. Yedeklenmesi
+      # gereken asıl dizin bu; kaybolursa hub yeni bir kimlik alır ve
+      # bütün eşlemeler kopar.
       - ${MORTISE_HOME:?.env icinde MORTISE_HOME tanimli olmali}/config:/var/syncthing/config
       # Senkronlanan vault'lar.
       - ${MORTISE_HOME}/data:/var/syncthing/data
@@ -50,5 +55,5 @@ services:
         max-size: "10m"
         max-file: "3"
 
-    # HEALTHCHECK tanımlanmadı: imajın kendisi /rest/noauth/health'i zaten
-    # dakikada bir yokluyor.
+    # HEALTHCHECK tanımlanmadı: imaj kendi sağlık ucunu zaten dakikada
+    # bir yokluyor.

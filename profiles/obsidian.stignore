@@ -1,9 +1,9 @@
 // Mortise — Obsidian vault ignore profili
 //
-// Vault kökünde `.stignore` olarak durur. Syncthing GUI'de klasörün
+// Vault kökünde `.stignore` olarak durur. Web arayüzünde klasörün
 // "Ignore Patterns" alanına yapıştırarak da uygulanabilir.
 //
-// Bu dosya Mortise'ın çıplak Syncthing'e kattığı asıl değer: aşağıdaki
+// Bu dosya Mortise'ın kattığı asıl değer: aşağıdaki
 // kalemler ayarlanmazsa Obsidian vault'u senkronlamak sürekli çakışma
 // üretir.
 

@@ -27,7 +27,7 @@
   **commit'leme**.
 
 ### Veri sınırı
-- Syncthing'in verisi ve config'i **asla repo içine girmez**. Sunucuda
+- Senkronlanan veri ve motorun config'i **asla repo içine girmez**. Sunucuda
   `/opt/mortise/data` ve `/opt/mortise/config` altında durur; `.gitignore`
   ikinci savunma hattıdır.
 - Sunucudaki mevcut ~30 container'a ve Caddy'ye dokunulmaz. Mortise onların
