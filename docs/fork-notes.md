@@ -26,6 +26,14 @@ Fork'un asıl maliyeti kod yazmak değil, **rebase**. Syncthing ayda bir stable
 2. **Faz 2:** `gui/` klasörünü fork'la, rebrand et, kendi imajını build et.
    `compose.yml`'de yalnızca `image:` satırı değişir — o satır dosyada
    "FORK NOKTASI" yorumuyla işaretli.
+
+   **Karar (2026-09-20):** panel sıfırdan yazılmayacak. Syncthing'in kendi
+   arayüzü fork'lanıp bizim kullanım senaryomuza — Obsidian vault'ları
+   paylaşan küçük, güvenilen bir düğüm ağı — göre sadeleştirilecek.
+   "Ayrı panel uygulaması" diye bir kavram yok; REST API üstüne bağımsız
+   bir arayüz yazma seçeneği değerlendirildi ve **reddedildi**. Bunun
+   bedeli bilinçli olarak kabul edildi: her upstream sürümünde `gui/`
+   için rebase yükü doğar, bu dosyanın var olma sebebi de budur.
 3. **En son, gerçekten şartsa:** protokol/davranış fork'u.
 
 ## Fork'a girmeden önce kontrol listesi
