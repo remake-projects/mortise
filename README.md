@@ -72,36 +72,36 @@ güvenli varsayılanları uygular. Servis, process ve komut adı `mortise`.
 Düğüm yalnızca hub ile eşleşir; hub `introducer` olduğu için ağdaki diğer
 düğümleri otomatik tanır. Herkesin herkesle tek tek eşleşmesi gerekmez.
 
-İki taraf da birbirini tanımadan bağlantı kurulmaz, o yüzden akış iki
-parçalı:
+**Hub'da** davet kodu üretilir ve katılacak kişiye iletilir:
 
 ```bash
-# 1) Yeni düğümde — hub'ı ekler, kendi device ID'sini yazdırır
-./scripts/join.sh <hub-ip> <hub-device-id>
-
-# 2) Hub'da — düğümü tanıtır ve klasörleri onunla paylaşır
-./scripts/add-node.sh <device-id> <isim>
+./scripts/invite.sh
+#   31.210.40.213:22000/6B4DPYX-O3OW6MV-...
 ```
 
-Sıra önemli değil: hangisi önce çalışırsa çalışsın, ikinci taraf
-eklendiği anda bağlantı kendiliğinden kurulur. Her iki script de
-idempotent, tekrar çalıştırmak zarar vermez.
+**Katılan makinede** tek komut:
+
+```bash
+./scripts/node-setup.sh
+./scripts/join.sh <davet-kodu>
+```
+
+**Hub'da** onaylanır. Katılan kişinin kendi kimliğini geri iletmesi
+gerekmez — bağlanmayı denediği anda bekleyenler listesine düşer:
+
+```bash
+./scripts/add-node.sh                      # bekleyenleri listeler
+./scripts/add-node.sh <device-id> [isim]   # onaylar, klasörleri paylaşır
+```
+
+Device ID'nin ilk birkaç karakteri yeterli. Onaylanana kadar hiçbir veri
+alışverişi olmaz; davet kodunu ele geçiren biri bağlanmayı deneyebilir
+ama onaysız hiçbir şey alamaz.
 
 > Katılan düğümde vault'un ignore profili **ayrıca** kurulmalı
 > (`cp profiles/obsidian.stignore <vault>/.stignore`). Klasör otomatik
 > gelir ama `.stignore` senkronlanmaz; atlanırsa o düğüm
 > `.obsidian/workspace.json`'ı paylaşmaya başlar.
-
-## Ağ planı
-
-| Port | Bind | Gerekçe |
-|---|---|---|
-| 8384 (GUI) | `127.0.0.1` | yalnızca SSH tüneli |
-| 22000 tcp+udp | `0.0.0.0` | cihaz senkronu; cihaz ID'li TLS ile korunur |
-| 21027/udp | **açılmaz** | LAN keşfi — VDS'te karşılıksız saldırı yüzeyi |
-
-Reverse proxy'ye (Caddy) hiç dokunulmaz; Mortise sunucudaki diğer
-stack'lerin yanına temassız kurulur.
 
 ## Ortak vault ve çakışma
 

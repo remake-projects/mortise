@@ -61,9 +61,19 @@ echo
 if [ "$connected" = 1 ]; then
   echo "Hub'a bağlanıldı. Paylaşılan klasörler kendiliğinden gelir."
 else
-  # Beklenen durum: hub bu düğümü henüz onaylamadı. Bağlantı denemesi
-  # hub'ın bekleyenler listesine düştü; onaylandığı anda bağlantı
-  # kendiliğinden kurulur, burada tekrar bir şey çalıştırmak gerekmez.
-  echo "Hub'a haber verildi, onay bekleniyor."
-  echo "Hub tarafında onaylandığı anda bağlantı kendiliğinden kurulur."
+  # Bağlantı kurulamadı. İki ayrı sebep olabilir ve kullanıcı için farklı
+  # anlama gelirler: hub bizi henüz onaylamadı (beklenen), ya da hub'a hiç
+  # ulaşamıyoruz (yanlış adres / kapalı port). TCP erişimine bakıp doğru
+  # olanı söylüyoruz — yoksa ulaşılamayan bir hub sessizce "onay
+  # bekleniyor" gibi görünürdü.
+  if (exec 3<> "/dev/tcp/${HUB_ADDR%%:*}/${HUB_ADDR##*:}") 2> /dev/null; then
+    exec 3<&- 2> /dev/null || true
+    echo "Hub'a haber verildi, onay bekleniyor."
+    echo "Hub tarafında onaylandığı anda bağlantı kendiliğinden kurulur."
+  else
+    echo "Hub'a ulaşılamıyor: $HUB_ADDR" >&2
+    echo "Davet kodundaki adres doğru mu, hub çalışıyor mu kontrol edin." >&2
+    echo "(Hub eklendi; adres düzelirse bağlantı kendiliğinden kurulur.)" >&2
+    exit 1
+  fi
 fi
