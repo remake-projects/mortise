@@ -67,8 +67,30 @@ dokunmaz), config'i `~/.mortise` altına açar, login'de açılan bir
 LaunchAgent tanımlar ve hub'dakiyle **aynı** `apply-defaults.sh` ile
 güvenli varsayılanları uygular. Servis, process ve komut adı `mortise`.
 
+### Ağa katılma
+
 Düğüm yalnızca hub ile eşleşir; hub `introducer` olduğu için ağdaki diğer
 düğümleri otomatik tanır. Herkesin herkesle tek tek eşleşmesi gerekmez.
+
+İki taraf da birbirini tanımadan bağlantı kurulmaz, o yüzden akış iki
+parçalı:
+
+```bash
+# 1) Yeni düğümde — hub'ı ekler, kendi device ID'sini yazdırır
+./scripts/join.sh <hub-ip> <hub-device-id>
+
+# 2) Hub'da — düğümü tanıtır ve klasörleri onunla paylaşır
+./scripts/add-node.sh <device-id> <isim>
+```
+
+Sıra önemli değil: hangisi önce çalışırsa çalışsın, ikinci taraf
+eklendiği anda bağlantı kendiliğinden kurulur. Her iki script de
+idempotent, tekrar çalıştırmak zarar vermez.
+
+> Katılan düğümde vault'un ignore profili **ayrıca** kurulmalı
+> (`cp profiles/obsidian.stignore <vault>/.stignore`). Klasör otomatik
+> gelir ama `.stignore` senkronlanmaz; atlanırsa o düğüm
+> `.obsidian/workspace.json`'ı paylaşmaya başlar.
 
 ## Ağ planı
 
