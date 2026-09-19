@@ -23,11 +23,13 @@
 Thumbs.db
 desktop.ini
 
-// --- Çakışma kopyaları vault'a yayılmasın ---
-// Syncthing çakışma kopyasını vault'un içine bırakır; Obsidian onu
-// normal bir not sanıp aramaya ve grafiğe karıştırır. Dosya yerelde
-// oluşmaya devam eder, sadece diğer cihazlara yayılmaz.
-*.sync-conflict-*
+// --- Çakışma kopyaları BİLEREK ignore edilmiyor ---
+// Vault ortak: birden fazla kişi aynı klasöre yazıyor. Çakışma kopyasını
+// ignore etmek onu yok etmez — yalnızca tek makinede görünmez kılar ve
+// kaybedilen düzenleme fark edilmeden orada kalır. Görünür olması,
+// sessizce birikmesinden iyidir.
+//
+//     *.sync-conflict-*     <-- ortak vault'ta EKLEME
 
 // NOT: `.obsidian/` bütünüyle ignore EDİLMEDİ. Eklenti ve tema ayarlarının
 // cihazlar arasında aynı kalması isteniyor — sadece yukarıdaki cihaza özel

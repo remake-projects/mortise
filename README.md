@@ -53,6 +53,23 @@ GUI dışarı açılmaz; erişim SSH tüneliyle:
 ./scripts/tunnel.sh           # http://127.0.0.1:8385
 ```
 
+### Düğüm (macOS)
+
+Her makine kendi Mortise düğümünü çalıştırır — hub'la aynı katmanlama:
+altta Syncthing, üstünde Mortise'ın yapılandırması.
+
+```bash
+./scripts/node-setup.sh
+```
+
+Script binary'yi kurar, düğümün config'ini `~/.mortise` altına açar (bu
+makinedeki başka bir Syncthing kurulumuyla karışmasın diye), login'de
+açılan bir LaunchAgent tanımlar ve hub'dakiyle **aynı** `apply-defaults.sh`
+ile güvenli varsayılanları uygular.
+
+Düğüm yalnızca hub ile eşleşir; hub `introducer` olduğu için ağdaki diğer
+düğümleri otomatik tanır. Herkesin herkesle tek tek eşleşmesi gerekmez.
+
 ## Ağ planı
 
 | Port | Bind | Gerekçe |
@@ -63,6 +80,35 @@ GUI dışarı açılmaz; erişim SSH tüneliyle:
 
 Reverse proxy'ye (Caddy) hiç dokunulmaz; Mortise sunucudaki diğer
 stack'lerin yanına temassız kurulur.
+
+## Ortak vault ve çakışma
+
+Vault ortaktır: aynı klasöre birden fazla kişi yazar. Çakışma Syncthing'in
+kusuru değil, dosya senkronunun doğasıdır — iki düğümde **aynı dosya**
+birbirinden habersiz değişirse satır bazlı merge yapılamaz, kaybeden taraf
+`Notum.sync-conflict-<tarih>-<cihaz>.md` olarak saklanır.
+
+Önemli ayrım: çakışma aynı **notta** olur, vault'ta değil.
+
+| Durum | Çakışma |
+|---|---|
+| Farklı notlar düzenleniyor | olmaz |
+| Aynı not, arada senkron geçmiş | olmaz |
+| Aynı not, birkaç saniye içinde | olur |
+| Biri offline'ken ikisi de aynı notu düzenlemiş | olur |
+
+Mortise bunu üç şekilde ele alır:
+
+1. **`fsWatcherDelayS = 3`** (Syncthing varsayılanı 10). Değişiklik daha
+   hızlı yayılır, çakışma penceresi daralır.
+2. **Çakışma kopyaları ignore edilmez.** Ignore etmek onları yok etmez,
+   yalnızca tek makinede görünmez kılar; kaybedilen düzenleme fark
+   edilmeden orada kalır.
+3. Geriye teknik olmayan bir kural kalır: aynı notu aynı anda
+   düzenlememek.
+
+Mutlak garanti isteniyorsa dosya senkronu yanlış araçtır — canlı ortak
+düzenleme CRDT tabanlı bir sistem gerektirir.
 
 ## Obsidian notu — her düğümde ayrı kurulur
 

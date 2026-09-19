@@ -25,6 +25,10 @@ MAX_AGE_DAYS="${MORTISE_MAX_AGE_DAYS:-30}"
 MIN_DISK_FREE_GB="${MORTISE_MIN_DISK_FREE_GB:-5}"
 # autoAccept ile gelen klasörlerin açılacağı dizin (container içi yol).
 FOLDER_PATH="${MORTISE_FOLDER_PATH:-/var/syncthing/data}"
+# Dosya değişikliğinin yayılmadan önce beklediği süre. Syncthing varsayılanı
+# 10 sn; ortak vault'ta bu pencere iki kişinin aynı notu çakıştırması için
+# fazla geniş. Vault'lar küçük olduğu için 3 sn'nin maliyeti yok.
+FSWATCHER_DELAY_S="${MORTISE_FSWATCHER_DELAY_S:-3}"
 
 api_key=$(sed -n 's|.*<apikey>\(.*\)</apikey>.*|\1|p' "$CONFIG")
 [ -n "$api_key" ] || { echo "apikey okunamadı: $CONFIG" >&2; exit 1; }
@@ -41,7 +45,9 @@ curl -fsS -X PATCH \
     "cleanupIntervalS": 3600
   },
   "minDiskFree": { "value": $MIN_DISK_FREE_GB, "unit": "GB" },
-  "path": "$FOLDER_PATH"
+  "path": "$FOLDER_PATH",
+  "fsWatcherEnabled": true,
+  "fsWatcherDelayS": $FSWATCHER_DELAY_S
 }
 JSON
 
@@ -52,4 +58,5 @@ d = json.load(sys.stdin)
 v = d["versioning"]
 print("  versioning :", v["type"] or "(yok)", v["params"])
 print("  minDiskFree:", d["minDiskFree"]["value"], d["minDiskFree"]["unit"])
-print("  path       :", repr(d["path"]))'
+print("  path       :", repr(d["path"]))
+print("  fsWatcher  :", d["fsWatcherEnabled"], "/", d["fsWatcherDelayS"], "sn")'
