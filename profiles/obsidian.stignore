@@ -1,0 +1,34 @@
+// Mortise — Obsidian vault ignore profili
+//
+// Vault kökünde `.stignore` olarak durur. Syncthing GUI'de klasörün
+// "Ignore Patterns" alanına yapıştırarak da uygulanabilir.
+//
+// Bu dosya Mortise'ın çıplak Syncthing'e kattığı asıl değer: aşağıdaki
+// kalemler ayarlanmazsa Obsidian vault'u senkronlamak sürekli çakışma
+// üretir.
+
+// --- Cihaza özel durum: senkronlanırsa dakikalık çakışma üretir ---
+// Açık sekmeler, panel düzeni, imleç konumu. Her cihazda farklı ve her
+// tıklamada yeniden yazılıyor. Vault senkronunda bir numaralı çakışma
+// kaynağı budur.
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+
+// Obsidian'ın kendi çöp kutusu. Silinen not zaten dosya versiyonlamada
+// duruyor; bunu senkronlamak aynı veriyi iki kez taşımak olur.
+.trash/
+
+// --- Sistem çöpü ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+// --- Çakışma kopyaları vault'a yayılmasın ---
+// Syncthing çakışma kopyasını vault'un içine bırakır; Obsidian onu
+// normal bir not sanıp aramaya ve grafiğe karıştırır. Dosya yerelde
+// oluşmaya devam eder, sadece diğer cihazlara yayılmaz.
+*.sync-conflict-*
+
+// NOT: `.obsidian/` bütünüyle ignore EDİLMEDİ. Eklenti ve tema ayarlarının
+// cihazlar arasında aynı kalması isteniyor — sadece yukarıdaki cihaza özel
+// dosyalar dışarıda.

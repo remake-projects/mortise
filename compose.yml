@@ -1,0 +1,54 @@
+# Mortise hub — VDS'te 7/24 açık Syncthing düğümü.
+#
+# Bu dosya yalnızca HUB'ı tanımlar. Laptop/masaüstü düğümleri kendi yerel
+# Syncthing kurulumlarını kullanır; onlar bu compose'a dahil değil.
+#
+# Sunucudaki mevcut ~30 container'a dokunmaz: kendi bridge ağı, Caddy'ye
+# hiç temas yok, 80/443 kullanılmıyor.
+
+name: mortise
+
+services:
+  syncthing:
+    # FORK NOKTASI — Faz 2'de kendi rebrand imajımıza geçerken değişecek
+    # tek satır burası. Gerekçe ve süreç: docs/fork-notes.md
+    image: syncthing/syncthing:${SYNCTHING_VERSION:?.env icinde SYNCTHING_VERSION tanimli olmali}
+    container_name: mortise-syncthing
+    hostname: ${MORTISE_HOSTNAME:-mortise-hub}
+    restart: unless-stopped
+
+    # `user:` DEĞİL, PUID/PGID: imajın entrypoint'i root olarak başlayıp
+    # veri dizinini chown ettikten sonra su-exec ile bu kullanıcıya düşer.
+    # `user:` verirsek o chown adımı izin hatası verir.
+    environment:
+      PUID: ${PUID:-1000}
+      PGID: ${PGID:-1000}
+
+    volumes:
+      # Syncthing'in kendi config'i (imajda STHOMEDIR). Cihaz kimliği ve
+      # özel anahtar burada durur — yedeklenmesi gereken asıl dizin bu.
+      # Kaybolursa hub yeni bir device ID alır ve tüm eşlemeler kopar.
+      - ${MORTISE_HOME:?.env icinde MORTISE_HOME tanimli olmali}/config:/var/syncthing/config
+      # Senkronlanan vault'lar.
+      - ${MORTISE_HOME}/data:/var/syncthing/data
+
+    ports:
+      # GUI: yalnızca localhost. Erişim SSH tüneliyle — scripts/tunnel.sh
+      - "127.0.0.1:8384:8384"
+      # Cihaz senkronu. Açık internete bakar; cihaz ID'li TLS ile korunur,
+      # şifresiz bir yüzey değil.
+      - "22000:22000/tcp"
+      - "22000:22000/udp"
+      # 21027/udp bilerek YOK: LAN keşif yayını. VDS'te karşılığı olmayan,
+      # yalnızca saldırı yüzeyi ekleyen bir port.
+
+    # Disk %81 dolu ve 5 Postgres ile paylaşılıyor. Sınırsız json-file
+    # logu buradaki en sessiz disk sızıntısı olurdu.
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    # HEALTHCHECK tanımlanmadı: imajın kendisi /rest/noauth/health'i zaten
+    # dakikada bir yokluyor.

@@ -1,0 +1,15 @@
+# Sunucu erişim notu — depoların dışında tutuluyor, commit'lenmemeli
+serverconnect.md
+
+# Yerel ortam
+.env
+.env.local
+
+# Syncthing verisi ve config'i asla depoya girmemeli.
+# Sunucudaki gerçek yeri /opt/mortise/ — burası ikinci savunma hattı.
+data/
+config/
+*.db
+
+# macOS
+.DS_Store
