@@ -3,8 +3,8 @@
 Sıfırdan Mortise hub'ı ayağa kaldırma. Hedef sunucu: Ubuntu 24.04, Docker
 Compose v2+. Adımlar `~/scripts/remote.sh "komut"` ile çalıştırılır.
 
-> Durum: bu doküman Faz 1 kurulumu sırasında doğrulanacak. Henüz canlıda
-> uygulanmadıysa adımlar tasarım niyetidir, çalıştırılmış kayıt değil.
+> Durum: adımlar 2026-09-20'de canlıda uygulandı ve çalıştı. Adım 3'e kadar
+> olan kısım doğrulanmış kayıttır; 4-8 arası GUI'den yapılır.
 
 ## 0. Ön kontrol
 
@@ -18,15 +18,46 @@ docker ps          # 22000 veya 8384 başkası tarafından tutuluyor mu
 Kök disk %85'in üstündeyse **önce yer aç**. Hub dolu diske yazmaya
 çalışırsa yalnız Mortise değil, sunucudaki bütün stack'ler birlikte düşer.
 
-## 1. Dizin ve depo
+## 1. Dizin, depo ve veri klasörleri
 
 `/opt/mortise` hem depo kökü hem veri köküdür. `data/` ve `config/`
 `.gitignore`'da — sunucuda çalışan kopyada kalırlar, asla commit'lenmezler.
 
+`/opt` root'a ait ama sunucuda **şifresiz sudo yok**. Kullanıcı `docker`
+grubunda olduğu için dizini Docker üzerinden açmak daha pratik:
+
 ```bash
-sudo mkdir -p /opt/mortise
-sudo chown "$(id -u):$(id -g)" /opt/mortise
-git clone git@github.com:remake-projects/mortise.git /opt/mortise
+docker run --rm -v /opt:/mnt alpine \
+  sh -c "mkdir -p /mnt/mortise && chown $(id -u):$(id -g) /mnt/mortise"
+
+git clone https://github.com/remake-projects/mortise.git /opt/mortise
+```
+
+Şifresiz sudo olan bir sunucuda aynı iş: `sudo mkdir -p /opt/mortise &&
+sudo chown "$(id -u):$(id -g)" /opt/mortise`
+
+### Veri klasörlerini ÖNCEDEN oluştur — atlanırsa container crash loop'a girer
+
+```bash
+mkdir -p /opt/mortise/config /opt/mortise/data
+```
+
+Bu adım kozmetik değil. Bind mount kaynağı yoksa **Docker onu `root:root`
+olarak oluşturur**, container ise `PUID=1000` ile çalışır ve config'e
+yazamaz. Sonuç sessiz değil ama kafa karıştırıcıdır:
+
+```
+WRN Failed to correct directory permissions (chmod /var/syncthing/config: operation not permitted)
+ERR Failed to acquire lock (open /var/syncthing/config/syncthing.lock: permission denied)
+ERR Too many restarts; not retrying further
+```
+
+Bu hataya düşüldüyse düzeltmesi:
+
+```bash
+cd /opt/mortise && docker compose down
+docker run --rm -v /opt/mortise:/mnt alpine chown -R 1000:1000 /mnt/config /mnt/data
+docker compose up -d
 ```
 
 ## 2. Ortam dosyası
