@@ -99,18 +99,36 @@ GUI açılır açılmaz, **başka hiçbir şey yapmadan önce**:
 - **Actions → Settings → GUI** altında kullanıcı adı + güçlü parola kur.
   GUI localhost'a bağlı olsa da sunucuda ~30 container dönüyor; biri ele
   geçerse localhost artık güvenli bir sınır değil.
-- Varsayılan "Default Folder"ı (`~/Sync`) sil. İşe yaramaz, karışıklık
-  yaratır.
+Syncthing 2.x artık varsayılan `~/Sync` klasörü oluşturmuyor — silinecek
+bir şey yok, config klasörsüz başlar.
 
-## 5. Versiyonlamayı sınırla — atlanamaz adım
+## 5. Hub varsayılanlarını uygula — atlanamaz adım
 
-Varsayılan ayarla her silinen ve değiştirilen sürüm süresiz birikir; 5 GB
-sessizce 15 GB olur ve disk zaten dar. Her klasör için:
+```bash
+cd /opt/mortise && ./scripts/apply-defaults.sh
+```
 
-**File Versioning → Staggered File Versioning**, `Maximum Age` = `30` gün.
+Syncthing'in kendi varsayılanları hub topolojisi için güvensiz; script
+ikisini birden düzeltir:
 
-Obsidian vault'ları küçük olduğu için 30 gün rahat sığar; asıl amaç üst
-sınırın *var olması*.
+- **staggered versioning, maxAge 30 gün.** Varsayılan bırakılırsa
+  versiyonlama tamamen kapalıdır: hub'da silinen dosyanın geri dönüşü
+  olmaz. Açıp sınırsız bırakmak ise ters uçta aynı derecede kötü — her
+  sürüm süresiz birikir, 5 GB sessizce 15 GB olur.
+- **minDiskFree 5 GB.** Syncthing'in varsayılanı %1, yani 50 GB'lık diskte
+  500 MB; o eşiğe kadar yazmaya devam eder. Disk riskinin doğru sahibi
+  burasıdır — harici bir cron değil, Syncthing'in kendi mekanizması.
+  Boş alan eşiğin altına inince klasöre yazmayı durdurur ve sunucudaki
+  diğer stack'lere nefes alanı bırakır.
+
+Değerler env ile geçilebilir:
+
+```bash
+MORTISE_MAX_AGE_DAYS=60 MORTISE_MIN_DISK_FREE_GB=8 ./scripts/apply-defaults.sh
+```
+
+Ayarlar **yeni eklenen** klasörlere uygulanır. Script'ten önce eklenmiş bir
+klasör varsa onu GUI'den ayrıca düzeltmek gerekir.
 
 ## 6. İlk düğümü eşle
 
