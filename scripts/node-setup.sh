@@ -100,7 +100,20 @@ else
   exit 1
 fi
 
-# 4) Mortise varsayılanları — hub'dakiyle aynı script. Klasör yolu burada
+# 4) Porta cevap veren gerçekten bizim düğümümüz mü? Makinede 8384'ü tutan
+#    başka bir senkron kurulumu varsa bizimki hiç açılamaz ve aşağıdaki
+#    ayarlar yanlış yere uygulanırdı.
+MINE="$("$BIN" device-id --home="$NODE_HOME/config")"
+SERVING="$(curl -fsS -H "X-API-Key: $(sed -n 's|.*<apikey>\(.*\)</apikey>.*|\1|p' "$NODE_HOME/config/config.xml")" \
+  "http://$GUI/rest/system/status" \
+  | python3 -c 'import sys,json; print(json.load(sys.stdin)["myID"])')"
+if [ "$MINE" != "$SERVING" ]; then
+  echo "$GUI adresinde başka bir kurulum çalışıyor (device $SERVING)." >&2
+  echo "MORTISE_NODE_GUI ile farklı bir port verin." >&2
+  exit 1
+fi
+
+# 5) Mortise varsayılanları — hub'dakiyle aynı script. Klasör yolu burada
 #    container değil, düğümün kendi data dizini.
 MORTISE_CONFIG="$NODE_HOME/config/config.xml" \
 MORTISE_API="http://$GUI" \
