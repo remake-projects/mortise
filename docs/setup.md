@@ -153,10 +153,20 @@ Doğrulama: laptop'ta bir not oluştur → hub'da belirsin → hub'da düzenle �
 laptop'ta belirsin. `.obsidian/workspace.json` **iki tarafta da farklı
 kalmalı** ve çakışma dosyası doğmamalı.
 
-## 8. Disk eşiği
+## 8. Disk izleme
 
-Kurulumdan sonra kök disk için bir uyarı eşiği kur. Bu, Mortise'ın diğer
-stack'leri düşürmesini önleyen son savunma hattı.
+Diskin asıl koruması adım 5'te kuruldu: `minDiskFree = 5 GB`. Syncthing
+boş alan o eşiğin altına inince klasöre yazmayı kendi durdurur — Mortise'ın
+diğer stack'leri düşürmesini bu engeller.
+
+Buradaki izleme onun yerine geçmez, **haberdar olmak** içindir: yazma
+durduğunda senkron sessizce durur ve fark edilmezse günlerce öyle kalır.
+
+```bash
+df -h /                                    # anlık
+docker exec mortise-syncthing curl -fksS \
+  -H "X-API-Key: $API" 127.0.0.1:8384/rest/system/error   # sessiz hatalar
+```
 
 ## Yedekleme
 
