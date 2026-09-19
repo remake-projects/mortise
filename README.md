@@ -1,0 +1,116 @@
+# Mortise
+
+Obsidian vault'larını kendi sunucumuz üzerinden senkronize eden, Syncthing
+tabanlı merkezi senkron kurulumu.
+
+*Mortise*, marangozlukta dişi yuva — geçmenin oturduğu yer.
+
+## Ne yapar
+
+Bir VDS'i 7/24 açık **hub** düğümü olarak çalıştırır; laptop ve masaüstü
+düğümleri ona ve birbirine bağlanır. Hub trafiği yönlendiren bir aracı
+değildir — ağdaki diğer düğümler gibi bir düğümdür, tek farkı hiç kapanmaması:
+
+- Laptop kapalıyken telefondan yazdığın not hub'a gider, laptop açılınca
+  oradan çeker.
+- Sunucusu olmayan iki düğüm birbirine doğrudan (P2P) bağlanır; hub olmadan
+  da senkron olurlar, sadece ikisi de aynı anda açık olmalıdır.
+
+Veri uçtan uca TLS ile taşınır ve her cihaz kendi ID'siyle doğrulanır.
+
+## Çıplak Syncthing'den farkı
+
+Syncthing bu topolojiyi zaten destekliyor; Mortise onu **Obsidian için
+doğru ayarlanmış** halde paketler:
+
+| | Syncthing varsayılanı | Mortise |
+|---|---|---|
+| Versiyonlama | kapalı — silinen dosya geri gelmez | `staggered`, 30 gün |
+| `minDiskFree` | %1 (50 GB diskte 500 MB) | 5 GB |
+| `defaults/folder.path` | boş — otomatik kabul edilen klasör kök dizine açılmaya çalışır ve düşer | `/var/syncthing/data` |
+| Ignore profili | yok | `profiles/obsidian.stignore` |
+
+Bu dördü ayarlanmadan Obsidian vault'u senkronlamak ya sürekli çakışma
+üretir ya da diski sessizce doldurur.
+
+## Kurulum
+
+Ayrıntılı ve doğrulanmış adımlar: **[`docs/setup.md`](docs/setup.md)**
+
+```bash
+# sunucuda
+git clone https://github.com/remake-projects/mortise.git /opt/mortise
+cd /opt/mortise
+mkdir -p config data          # atlanırsa Docker bunları root:root açar, container crash loop'a girer
+cp .env.example .env
+docker compose up -d
+./scripts/apply-defaults.sh   # güvenli varsayılanlar
+```
+
+GUI dışarı açılmaz; erişim SSH tüneliyle:
+
+```bash
+./scripts/tunnel.sh           # http://127.0.0.1:8385
+```
+
+## Ağ planı
+
+| Port | Bind | Gerekçe |
+|---|---|---|
+| 8384 (GUI) | `127.0.0.1` | yalnızca SSH tüneli |
+| 22000 tcp+udp | `0.0.0.0` | cihaz senkronu; cihaz ID'li TLS ile korunur |
+| 21027/udp | **açılmaz** | LAN keşfi — VDS'te karşılıksız saldırı yüzeyi |
+
+Reverse proxy'ye (Caddy) hiç dokunulmaz; Mortise sunucudaki diğer
+stack'lerin yanına temassız kurulur.
+
+## Obsidian notu — her düğümde ayrı kurulur
+
+`profiles/obsidian.stignore` vault kökünde `.stignore` olarak durur:
+
+```bash
+cp profiles/obsidian.stignore /yol/vault/.stignore
+```
+
+**Syncthing `.stignore`'u senkronlamaz** (kendi iç dosyası sayar, çünkü her
+düğümün kendi kuralları olabilir). Yani profili hub'a koymak yetmez —
+vault'u bağlayan **her düğümde** ayrı ayrı kurmak gerekir. Atlanırsa o
+düğüm `.obsidian/workspace.json`'ı senkronlamaya başlar ve dakikalar içinde
+`sync-conflict` dosyaları üretir.
+
+## Depo yapısı
+
+```
+compose.yml                  hub tanımı; fork'a geçişte değişecek tek satır işaretli
+.env.example                 PUID/PGID, veri yolu, imaj etiketi
+scripts/
+  tunnel.sh                  GUI'ye SSH tüneli
+  apply-defaults.sh          güvenli klasör varsayılanlarını uygular
+profiles/
+  obsidian.stignore          vault ignore profili
+docs/
+  setup.md                   sıfırdan kurulum
+  fork-notes.md              upstream'den sapmaların kaydı
+```
+
+Senkronlanan veri ve Syncthing'in kendi config'i **repo dışındadır**:
+sunucuda `/opt/mortise/{data,config}`, `.gitignore` ikinci savunma hattı.
+
+## Durum
+
+**Faz 1 — kurulum: tamam.** Hub canlıda çalışıyor. Geçici ikinci bir
+Syncthing düğümüyle uçtan uca doğrulandı: otomatik klasör kabulü, iki yönlü
+senkron ve ignore profilinin `workspace.json`'ı gerçekten dışarıda tuttuğu
+test edildi.
+
+**Faz 2 — web panel:** Syncthing GUI'si fork'lanıp rebrand edilecek.
+Gerekçe ve kademeli plan: [`docs/fork-notes.md`](docs/fork-notes.md).
+
+Yol haritasında: kullanıcının kendi sunucusuna kurup ağa katılmasını
+kolaylaştıran eşleme akışı.
+
+## Lisans
+
+[MPL-2.0](LICENSE) — upstream Syncthing ile aynı. Fork dağıtılırsa
+değiştirilen mevcut dosyaların kaynağı yayınlanır; "Syncthing" adı ve
+logosu kullanılamaz.

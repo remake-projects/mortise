@@ -138,20 +138,35 @@ Hub tarafında o cihazı işaretle:
 - **Introducer**: açık. Hub'ın tanıdığı diğer cihazlar yeni düğüme otomatik
   tanıtılır — "hub'a katıl, ağdaki herkesi gör" akışı bununla çalışır.
 - **Auto Accept Folders**: açık. Bir düğümün paylaştığı yeni vault hub'da
-  elle onay beklemez.
+  elle onay beklemez. Bunun çalışması adım 5'e bağlıdır: `defaults/folder.path`
+  boşsa klasör kök dizine açılmaya çalışılır ve `mkdir /<ad>: permission
+  denied` ile sessizce düşer — cihaz bağlı görünür, klasör hiç gelmez.
+
+Otomatik kabul edilen klasör, adı klasörün **label**'ından alır; boşluklu
+bir label boşluklu bir dizin adı üretir.
 
 ## 7. Pilot vault
 
-Küçük bir test vault'uyla uçtan uca doğrula. Vault köküne ignore profilini
-koy:
+Vault köküne ignore profilini koy:
 
 ```bash
 cp profiles/obsidian.stignore /yol/vault/.stignore
 ```
 
+> **Her düğümde ayrı kurulur.** Syncthing `.stignore`'u senkronlamaz —
+> `.stfolder`/`.stversions` gibi kendi iç dosyası sayar, çünkü her düğümün
+> kendi kuralları olabilir. Hub'a koymak yetmez; vault'u bağlayan her
+> düğümde ayrıca kurulmalı. Atlanan düğüm `.obsidian/workspace.json`'ı
+> senkronlamaya başlar ve dakikalar içinde `sync-conflict` üretir.
+
 Doğrulama: laptop'ta bir not oluştur → hub'da belirsin → hub'da düzenle →
 laptop'ta belirsin. `.obsidian/workspace.json` **iki tarafta da farklı
 kalmalı** ve çakışma dosyası doğmamalı.
+
+Bu akış 2026-09-20'de sunucuda geçici ikinci bir Syncthing düğümüyle
+doğrulandı: otomatik klasör kabulü, iki yönlü senkron (hub→düğüm 2 sn,
+düğüm→hub 10 sn) ve `workspace.json`'ın gerçekten dışarıda kaldığı test
+edildi.
 
 ## 8. Disk izleme
 
