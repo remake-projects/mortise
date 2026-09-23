@@ -12,7 +12,7 @@
  *
  * Upstream'in varsayılan teması burada açık ve koyu tema dosyalarını
  * işletim sistemi tercihine göre içe aktarıyordu. Mortise'ın kendi açık/koyu
- * modu var (mortise/css/tokens.css) ve bütün renkler token'lardan geliyor;
+ * modu var (assets/mortise/css/tokens.css) ve bütün renkler token'lardan geliyor;
  * upstream'in koyu teması yüklenseydi kendi sabit renkleriyle token'larla
  * özgüllük yarışına girerdi. Bu yüzden varsayılan tema hiçbir şey yüklemiyor.
  *
