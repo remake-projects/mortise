@@ -149,7 +149,8 @@ düğüm `.obsidian/workspace.json`'ı senkronlamaya başlar ve dakikalar içind
 ## Depo yapısı
 
 ```
-compose.yml                  hub tanımı; fork'a geçişte değişecek tek satır işaretli
+compose.yml                  hub tanımı; motor fork'unda değişecek tek satır işaretli
+gui/                         arayüz fork'u — yalnızca upstream'den farklı dosyalar
 .env.example                 PUID/PGID, veri yolu, imaj etiketi
 scripts/
   tunnel.sh                  GUI'ye SSH tüneli
@@ -171,9 +172,12 @@ düğümle uçtan uca doğrulandı: otomatik klasör kabulü, iki yönlü
 senkron ve ignore profilinin `workspace.json`'ı gerçekten dışarıda tuttuğu
 test edildi.
 
-**Faz 2 — web arayüzü:** mevcut arayüz fork'lanıp Mortise'a dönüştürülecek.
-Bugün arayüzde ve motorun kendi çıktılarında upstream adı hâlâ görünür;
-bunu kaldırmak fork gerektiriyor.
+**Faz 2 — web arayüzü: tamam.** Arayüz fork'landı ve re:make hub'ın tasarım
+diline taşındı: aynı renk token'ları, Geist yazı tipleri, grain dokusu,
+açık/koyu mod. Upstream adı arayüzün hiçbir yerinde görünmüyor — giriş
+ekranı, 57 dildeki çeviriler ve Hakkında penceresi dahil. Motor binary'si
+upstream'de kaldı; nasıl yapıldığı ve rebase adımları:
+[`docs/fork-notes.md`](docs/fork-notes.md).
 Gerekçe ve kademeli plan: [`docs/fork-notes.md`](docs/fork-notes.md).
 
 Yol haritasında: kullanıcının kendi sunucusuna kurup ağa katılmasını
