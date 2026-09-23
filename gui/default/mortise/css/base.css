@@ -1,0 +1,168 @@
+/*
+ * Temel: zemin, yazı, bağlantılar, kod, seçim, grain.
+ *
+ * Upstream'in Bootstrap 3'ü sabit renklerle geliyor (#fff, #333, #777…).
+ * Bu dosya ve kardeşleri o renkleri token'lara bağlıyor; koyu mod ayrıca
+ * yazılmıyor, token'lar değişince kendiliğinden geliyor.
+ */
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Upstream başlıklarda Raleway kullanıyor; hub'da her şey Geist. */
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+  font-family: var(--font-sans);
+  color: var(--foreground);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+h1 small, h2 small, h3 small, h4 small,
+.h1 small, .h2 small, .h3 small, .h4 small {
+  color: var(--muted-foreground);
+}
+
+/* Pano bölüm başlıkları ("Klasörler", "Bu Cihaz", "Uzak Cihazlar"). Hub'ın
+   kenar çubuğundaki grup etiketleriyle aynı dil: küçük, büyük harf, geniş
+   aralık, geri çekilmiş. Başlık içeriği değil, içeriğin nerede başladığını
+   söylüyor. */
+.content > .row > [role="region"] > h3 {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted-foreground);
+  margin: 28px 0 12px;
+}
+
+.content {
+  padding-top: 8px;
+  padding-bottom: 48px;
+}
+
+a,
+a:focus {
+  color: var(--foreground);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in oklab, var(--foreground) 30%, transparent);
+  text-underline-offset: 3px;
+  transition: color 180ms ease, text-decoration-color 180ms ease;
+}
+
+a:hover {
+  color: var(--foreground);
+  text-decoration-color: currentColor;
+}
+
+/* Düğme ve menü gibi davranan bağlantılar altı çizili olmamalı. */
+.btn, .btn:hover, .btn:focus,
+.nav a, .nav a:hover, .nav a:focus,
+.dropdown-menu a, .dropdown-menu a:hover,
+.navbar a, .navbar a:hover,
+.panel-heading, .panel-heading:hover, .panel-heading:focus,
+.list-group-item, a.toggler {
+  text-decoration: none;
+}
+
+hr {
+  border-top-color: var(--border);
+}
+
+.text-muted, .help-block, small, .small {
+  color: var(--muted-foreground);
+}
+
+.text-success { color: var(--success); }
+.text-warning { color: var(--warning); }
+.text-danger  { color: var(--danger); }
+.text-info    { color: var(--info); }
+.text-primary { color: var(--foreground); }
+
+code, kbd, pre, samp, .text-monospace {
+  font-family: var(--font-mono);
+}
+
+code {
+  color: var(--foreground);
+  background: var(--muted);
+  border-radius: calc(var(--radius) * 0.6);
+  padding: 1px 5px;
+  font-size: 0.88em;
+}
+
+pre {
+  color: var(--foreground);
+  background: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+kbd {
+  color: var(--foreground);
+  background: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: none;
+}
+
+.well {
+  background: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: none;
+}
+
+legend {
+  color: var(--foreground);
+  border-bottom-color: var(--border);
+}
+
+::selection {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+
+/* Grain — hub'ın GrainOverlay bileşeninin aynısı: tüm sayfanın üstünde,
+   tıklamayı geçiren, neredeyse görünmez bir doku. Düz renk zemini kâğıda
+   yaklaştıran şey bu. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.035;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+}
+
+@media (prefers-color-scheme: dark) {
+  body::after { mix-blend-mode: soft-light; }
+}
+
+/* İnce kaydırma çubukları: varsayılan gri kalın çubuk sıcak zeminde
+   yabancı duruyor. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

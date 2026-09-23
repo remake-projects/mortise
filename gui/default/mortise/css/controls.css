@@ -1,0 +1,295 @@
+/*
+ * Kontroller — düğmeler, form alanları, etiketler, ilerleme çubukları,
+ * sekmeler, uyarı kutuları.
+ *
+ * Hub'ın düğme dili: yumuşak köşe, ince kenarlık, gölge yok. Birincil düğme
+ * mürekkep rengi (açıkta siyah, koyuda kırık beyaz); renk yalnızca bir
+ * durumu anlatırken kullanılıyor.
+ */
+
+/* ─── Düğmeler ───────────────────────────────────────── */
+
+.btn {
+  border-radius: var(--radius);
+  font-weight: 500;
+  font-size: 13px;
+  box-shadow: none;
+  transition: color 180ms ease, background-color 180ms ease,
+              border-color 180ms ease, opacity 180ms ease;
+}
+
+.btn:active, .btn.active {
+  box-shadow: none;
+}
+
+.btn:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--ring) 60%, transparent);
+  outline-offset: 2px;
+}
+
+.btn-sm { border-radius: calc(var(--radius) * 0.8); }
+.btn-xs { border-radius: calc(var(--radius) * 0.6); }
+
+.btn-default {
+  background: var(--card);
+  color: var(--foreground);
+  border-color: var(--border);
+}
+
+.btn-default:hover, .btn-default:focus, .btn-default:active,
+.btn-default.active, .open > .dropdown-toggle.btn-default {
+  background: var(--muted);
+  color: var(--foreground);
+  border-color: var(--border);
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border-color: var(--primary);
+}
+
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active,
+.btn-primary.active, .open > .dropdown-toggle.btn-primary {
+  background: color-mix(in oklab, var(--primary) 88%, var(--background));
+  color: var(--primary-foreground);
+  border-color: transparent;
+}
+
+/* Durum düğmeleri tek kural ailesi: rengi --tone'dan alıyor. */
+.btn-danger  { --tone: var(--destructive); }
+.btn-warning { --tone: var(--warning); }
+.btn-success { --tone: var(--success); }
+.btn-info    { --tone: var(--info); }
+
+.btn-danger, .btn-warning, .btn-success, .btn-info {
+  background: var(--tone);
+  color: var(--on-fill);
+  border-color: var(--tone);
+}
+
+.btn-danger:hover, .btn-danger:focus, .btn-danger:active,
+.btn-warning:hover, .btn-warning:focus, .btn-warning:active,
+.btn-success:hover, .btn-success:focus, .btn-success:active,
+.btn-info:hover, .btn-info:focus, .btn-info:active {
+  background: color-mix(in oklab, var(--tone) 88%, var(--background));
+  color: var(--on-fill);
+  border-color: transparent;
+}
+
+.btn-link {
+  color: var(--muted-foreground);
+}
+
+.btn-link:hover, .btn-link:focus {
+  color: var(--foreground);
+  text-decoration: none;
+}
+
+.btn[disabled], .btn.disabled, fieldset[disabled] .btn {
+  opacity: 0.5;
+}
+
+.close {
+  color: var(--foreground);
+  text-shadow: none;
+  opacity: 0.5;
+}
+
+.close:hover, .close:focus {
+  color: var(--foreground);
+  opacity: 0.9;
+}
+
+/* ─── Form alanları ──────────────────────────────────── */
+
+.form-control {
+  background: color-mix(in oklab, var(--background) 60%, var(--card));
+  color: var(--foreground);
+  border: 1px solid var(--input);
+  border-radius: calc(var(--radius) * 0.8);
+  box-shadow: none;
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.form-control:focus {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 25%, transparent);
+}
+
+.form-control::placeholder {
+  color: var(--muted-foreground);
+  opacity: 0.8;
+}
+
+.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control {
+  background: var(--muted);
+  color: var(--muted-foreground);
+}
+
+select.form-control option {
+  background: var(--card);
+  color: var(--foreground);
+}
+
+.input-group-addon {
+  background: var(--muted);
+  color: var(--muted-foreground);
+  border-color: var(--input);
+}
+
+.input-group .form-control:first-child,
+.input-group-addon:first-child,
+.input-group-btn:first-child > .btn {
+  border-top-left-radius: calc(var(--radius) * 0.8);
+  border-bottom-left-radius: calc(var(--radius) * 0.8);
+}
+
+.input-group .form-control:last-child,
+.input-group-addon:last-child,
+.input-group-btn:last-child > .btn {
+  border-top-right-radius: calc(var(--radius) * 0.8);
+  border-bottom-right-radius: calc(var(--radius) * 0.8);
+}
+
+label {
+  font-weight: 500;
+}
+
+input[type="checkbox"], input[type="radio"] {
+  accent-color: var(--primary);
+}
+
+.has-error .form-control { border-color: var(--danger); }
+.has-error .help-block, .has-error .control-label { color: var(--danger); }
+.has-warning .form-control { border-color: var(--warning); }
+.has-warning .help-block, .has-warning .control-label { color: var(--warning); }
+.has-success .form-control { border-color: var(--success); }
+
+/* ─── Etiketler ve rozetler ──────────────────────────── */
+
+/* Hub'daki durum rozetleri: dolu renk değil, %12'lik zemin üstünde renkli
+   metin. Etiket bir şeyin durumunu söylüyor, bağırmıyor. */
+.label {
+  --tone: var(--muted-foreground);
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  background: color-mix(in oklab, var(--tone) 12%, transparent);
+  color: var(--tone);
+}
+
+.label-success { --tone: var(--success); }
+.label-warning { --tone: var(--warning); }
+.label-danger  { --tone: var(--danger); }
+.label-info    { --tone: var(--info); }
+.label-primary { --tone: var(--foreground); }
+
+.badge {
+  background: var(--muted);
+  color: var(--foreground);
+  font-weight: 600;
+}
+
+/* ─── İlerleme ───────────────────────────────────────── */
+
+.progress {
+  background: var(--muted);
+  border-radius: 999px;
+  box-shadow: none;
+}
+
+.progress-bar {
+  background: var(--info);
+  box-shadow: none;
+}
+
+.progress-bar-success { background: var(--success); }
+.progress-bar-warning { background: var(--warning); }
+.progress-bar-danger  { background: var(--danger); }
+
+/* ─── Sekmeler ───────────────────────────────────────── */
+
+.nav-tabs {
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-tabs > li > a {
+  color: var(--muted-foreground);
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  margin-right: 4px;
+  background: transparent;
+}
+
+.nav-tabs > li > a:hover {
+  color: var(--foreground);
+  background: transparent;
+  border-bottom-color: var(--border);
+}
+
+.nav-tabs > li.active > a,
+.nav-tabs > li.active > a:hover,
+.nav-tabs > li.active > a:focus {
+  color: var(--foreground);
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid var(--foreground);
+}
+
+.nav-pills > li > a {
+  color: var(--muted-foreground);
+  border-radius: var(--radius);
+}
+
+.nav-pills > li.active > a,
+.nav-pills > li.active > a:hover,
+.nav-pills > li.active > a:focus {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+
+/* ─── Uyarı kutuları ─────────────────────────────────── */
+
+.alert {
+  --tone: var(--muted-foreground);
+  border: 1px solid color-mix(in oklab, var(--tone) 30%, transparent);
+  border-radius: var(--radius);
+  background: color-mix(in oklab, var(--tone) 8%, transparent);
+  color: var(--tone);
+}
+
+.alert-danger  { --tone: var(--danger); }
+.alert-warning { --tone: var(--warning); }
+.alert-info    { --tone: var(--info); }
+.alert-success { --tone: var(--success); }
+
+/* ─── Sayfalama ──────────────────────────────────────── */
+
+.pagination > li > a, .pagination > li > span {
+  background: var(--card);
+  color: var(--foreground);
+  border-color: var(--border);
+}
+
+.pagination > li > a:hover, .pagination > li > span:hover {
+  background: var(--muted);
+  color: var(--foreground);
+  border-color: var(--border);
+}
+
+.pagination > .active > a, .pagination > .active > a:hover,
+.pagination > .active > span, .pagination > .active > span:hover {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border-color: var(--primary);
+}
+
+.pagination > .disabled > a, .pagination > .disabled > span {
+  background: var(--card);
+  color: var(--muted-foreground);
+  border-color: var(--border);
+}

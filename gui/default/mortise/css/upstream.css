@@ -1,0 +1,19 @@
+/*
+ * Upstream'e giden bağlantıları gizler.
+ *
+ * Arayüzde upstream projenin dokümantasyonuna, forumuna, sürüm notlarına ve
+ * istatistik sayfasına giden çok sayıda bağlantı var: formlardaki "?"
+ * yardım ikonları, yükseltme pencerelerindeki sürüm notları, kullanım
+ * raporu sayfası. Hepsi upstream markasını taşıyan sayfalara açılıyor.
+ *
+ * Bu bağlantılar 3800 satırlık controller'da ve düzinelerce şablonda
+ * dağınık. Hepsini fork'lamak her upstream sürümünde o kadar dosyayı
+ * yeniden birleştirmek demek; bunun yerine tek bir seçici, adresi upstream'e
+ * giden her bağlantıyı yakalıyor. Upstream yeni bir bağlantı eklese de bu
+ * kural onu da kapsıyor.
+ */
+
+a[href*="syncthing.net"],
+a[href*="github.com/syncthing"] {
+  display: none !important;
+}

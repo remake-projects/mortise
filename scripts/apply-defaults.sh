@@ -12,6 +12,11 @@
 #                          denied" ile düşer. Hub'ın en sessiz kırığı budur:
 #                          cihaz bağlanır, klasör asla gelmez.
 #
+# Ayrıca kullanım ve çökme raporları kapatılır. Arayüz Mortise adını
+# taşıyor; açık kalsalar "Mortise geliştiricilere rapor gönderir" diye
+# soracaklardı, oysa raporlar upstream'in sunucularına gidiyor. Adı
+# değiştirilmiş bir arayüzde bu soru yanıltıcı olurdu.
+#
 # Sunucuda çalıştırılır:  ./scripts/apply-defaults.sh
 set -euo pipefail
 
@@ -51,6 +56,14 @@ curl -fsS -X PATCH \
 }
 JSON
 
+# urAccepted = -1: kullanım raporu reddedildi, onay penceresi bir daha
+# açılmaz. 0 bırakılsa arayüz ilk açılışta soruyor.
+curl -fsS -X PATCH \
+  -H "X-API-Key: $api_key" \
+  -H "Content-Type: application/json" \
+  --data '{"urAccepted": -1, "crashReportingEnabled": false}' \
+  "$API_URL/rest/config/options" > /dev/null
+
 echo "Uygulandı. Hub'ın yeni klasör varsayılanları:"
 curl -fsS -H "X-API-Key: $api_key" "$API_URL/rest/config/defaults/folder" \
   | python3 -c 'import sys,json
@@ -60,3 +73,8 @@ print("  versioning :", v["type"] or "(yok)", v["params"])
 print("  minDiskFree:", d["minDiskFree"]["value"], d["minDiskFree"]["unit"])
 print("  path       :", repr(d["path"]))
 print("  fsWatcher  :", d["fsWatcherEnabled"], "/", d["fsWatcherDelayS"], "sn")'
+curl -fsS -H "X-API-Key: $api_key" "$API_URL/rest/config/options" \
+  | python3 -c 'import sys,json
+o = json.load(sys.stdin)
+print("  raporlar   : kullanım", "kapalı" if o["urAccepted"] < 0 else o["urAccepted"],
+      "/ çökme", "açık" if o["crashReportingEnabled"] else "kapalı")'

@@ -5,6 +5,9 @@
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this file,
 // You can obtain one at https://mozilla.org/MPL/2.0/.
+//
+// Mortise fork'u: marka, yardım menüsü ve stil katmanı değiştirildi.
+// Sapmaların listesi ve gerekçeleri: docs/fork-notes.md
 
 -->
 <html lang="en" ng-app="syncthing" ng-controller="SyncthingController">
@@ -12,10 +15,9 @@
   <meta charset="utf-8"/>
   <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <link rel="shortcut icon" href="assets/img/favicon-default.png" ng-href="assets/img/favicon-{{syncthingStatus()}}.png" type="image/x-icon"/>
-  <link rel="mask-icon" href="assets/img/safari-pinned-tab.svg" color="#0882c8"/>
+  <link rel="icon" type="image/svg+xml" href="mortise/img/favicon-default.svg" ng-href="mortise/img/favicon-{{syncthingStatus()}}.svg"/>
 
-  <title ng-bind="thisDeviceName() + ' | Syncthing'"></title>
+  <title ng-bind="thisDeviceName() + ' | Mortise'">Mortise</title>
   <link href="vendor/bootstrap/css/bootstrap.css" rel="stylesheet"/>
   <link href="vendor/daterangepicker/daterangepicker.css" rel="stylesheet"/>
   <link href="assets/font/raleway.css" rel="stylesheet"/>
@@ -24,15 +26,23 @@
   <link href="assets/css/tree.css" rel="stylesheet"/>
   <link href="assets/css/overrides.css" rel="stylesheet"/>
   <link href="assets/css/theme.css" rel="stylesheet"/>
+  <link href="mortise/css/fonts.css" rel="stylesheet"/>
+  <link href="mortise/css/tokens.css" rel="stylesheet"/>
+  <link href="mortise/css/base.css" rel="stylesheet"/>
+  <link href="mortise/css/topbar.css" rel="stylesheet"/>
+  <link href="mortise/css/panels.css" rel="stylesheet"/>
+  <link href="mortise/css/controls.css" rel="stylesheet"/>
+  <link href="mortise/css/overlays.css" rel="stylesheet"/>
+  <link href="mortise/css/upstream.css" rel="stylesheet"/>
 </head>
 
 <body>
   <noscript>
     <nav class="navbar navbar-top navbar-default" role="navigation">
       <div class="container">
-        <span class="navbar-brand" aria-hidden="true">
-          <img class="logo hidden-xs" src="assets/img/logo-horizontal.svg" height="32" width="117" alt=""/>
-          <img class="logo hidden visible-xs" src="assets/img/favicon-default.png" height="32" alt=""/>
+        <span class="navbar-brand mortise-brand">
+          <svg class="mortise-mark" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm3.5 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1h-3z"/></svg>
+          <span class="mortise-wordmark hidden-xs">mortise</span>
         </span>
       </div>
     </nav>
@@ -51,7 +61,7 @@
             </div>
             <div class="panel-body">
               <p>
-              The Syncthing admin interface requires JavaScript. Please enable JavaScript in your web browser and try again.
+              The Mortise admin interface requires JavaScript. Please enable JavaScript in your web browser and try again.
               </p>
             </div>
           </div>
@@ -67,9 +77,9 @@
 
     <nav class="navbar navbar-top navbar-default" role="navigation">
       <div class="container">
-        <span class="navbar-brand" aria-hidden="true">
-          <img class="logo hidden-xs" src="assets/img/logo-horizontal.svg" height="32" width="117" alt=""/>
-          <img class="logo hidden visible-xs" src="assets/img/favicon-default.png" height="32" alt=""/>
+        <span class="navbar-brand mortise-brand">
+          <svg class="mortise-mark" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm3.5 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1h-3z"/></svg>
+          <span class="mortise-wordmark hidden-xs">mortise</span>
         </span>
         <p ng-if="authenticated" class="navbar-text hidden-xs" ng-class="{'hidden-sm':upgradeInfo && upgradeInfo.newer}">{{thisDeviceName()}}</p>
         <ul class="nav navbar-nav navbar-right">
@@ -93,17 +103,7 @@
               <span class="caret"></span>
             </a>
             <ul class="dropdown-menu">
-              <li><a class="navbar-link" href="{{docsURL('intro/gui')}}" target="_blank"><span class="fa fa-fw fa-info-circle"></span>&nbsp;<span translate>Introduction</span></a></li>
-              <li class="divider" aria-hidden="true"></li>
-              <li><a class="navbar-link" href="https://syncthing.net/" target="_blank"><span class="fa fa-fw fa-home"></span>&nbsp;<span translate>Home page</span></a></li>
-              <li><a class="navbar-link" href="{{docsURL()}}" target="_blank"><span class="fa fa-fw fa-book"></span>&nbsp;<span translate>Documentation</span></a></li>
-              <li><a class="navbar-link" href="https://forum.syncthing.net" target="_blank"><span class="fa fa-fw fa-users"></span>&nbsp;<span translate>Support</span></a></li>
-              <li class="divider" aria-hidden="true"></li>
-              <li><a class="navbar-link" href="https://github.com/syncthing/syncthing/releases" target="_blank"><span class="fa fa-fw fa-file-text"></span>&nbsp;<span translate>Changelog</span></a></li>
-              <li><a class="navbar-link" href="https://data.syncthing.net/" target="_blank"><span class="fa fa-fw fa-bar-chart"></span>&nbsp;<span translate>Statistics</span></a></li>
-              <li class="divider" aria-hidden="true"></li>
-              <li><a class="navbar-link" href="https://github.com/syncthing/syncthing/issues" target="_blank"><span class="fa fa-fw fa-bug"></span>&nbsp;<span translate>Bugs</span></a></li>
-              <li><a class="navbar-link" href="https://github.com/syncthing/syncthing" target="_blank"><span class="fa fa-fw fa-file-code-o"></span>&nbsp;<span translate>Source Code</span></a></li>
+              <li><a class="navbar-link" href="https://github.com/remake-projects/mortise" target="_blank"><span class="fa fa-fw fa-file-code-o"></span>&nbsp;<span translate>Source Code</span></a></li>
               <li class="divider" aria-hidden="true"></li>
               <li><a href="" ng-click="about.show()"><span class="fa fa-fw fa-heart"></span>&nbsp;<span translate>About</span></a></li>
             </ul>
@@ -1091,6 +1091,7 @@
   <script type="text/javascript" src="assets/lang/prettyprint.js"></script>
   <script type="text/javascript" src="meta.js"></script>
   <script type="text/javascript" src="syncthing/app.js"></script>
+  <script type="text/javascript" src="mortise/js/brand.js"></script>
   <!-- / gui application code -->
 
 </body>

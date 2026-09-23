@@ -1,0 +1,167 @@
+/*
+ * Paneller — klasör ve cihaz kartları, durum kutuları, tablolar.
+ *
+ * Hub'daki kartlar gibi: düz kart zemini, ince kenarlık, gölge yok. Durum
+ * panelleri (uyarı, hata) tüm başlığı boyamıyor; renk kenarlıkta ve başlığın
+ * hafif tonunda kalıyor. Hub'ın durum rozetlerindeki %12'lik zemin mantığı.
+ */
+
+.panel {
+  background: var(--card);
+  color: var(--card-foreground);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: none;
+}
+
+.panel-group .panel {
+  border-radius: var(--radius);
+}
+
+.panel-group .panel + .panel {
+  margin-top: 8px;
+}
+
+.panel-default > .panel-heading,
+.panel-heading {
+  background: var(--card);
+  color: var(--card-foreground);
+  border-color: var(--border);
+  border-top-left-radius: calc(var(--radius) - 1px);
+  border-top-right-radius: calc(var(--radius) - 1px);
+}
+
+/* Klasör ve cihaz başlıkları birer düğme: tıklayınca ayrıntı açılıyor. */
+button.panel-heading {
+  transition: background-color 180ms ease;
+}
+
+button.panel-heading:hover,
+button.panel-heading:focus {
+  background: color-mix(in oklab, var(--muted) 60%, var(--card));
+  outline: none;
+}
+
+button.panel-heading:focus-visible {
+  box-shadow: inset 0 0 0 2px color-mix(in oklab, var(--ring) 60%, transparent);
+}
+
+.panel-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: inherit;
+}
+
+.panel-icon {
+  color: var(--muted-foreground);
+}
+
+.panel-heading .panel-status {
+  font-size: 13px;
+}
+
+/* Senkron/tarama ilerlemesi başlığın arkasında dolan bir zemin. Upstream
+   düz mavi; burada bilgi renginin hafif tonu — metnin arkasında
+   okunabilirliği bozmadan ilerlemeyi gösteriyor. */
+.panel-progress {
+  background: color-mix(in oklab, var(--info) 14%, transparent);
+}
+
+.panel-default > .panel-heading + .panel-collapse > .panel-body,
+.panel-heading + .panel-collapse > .panel-body,
+.panel-heading + .panel-body {
+  border-top: 1px solid var(--border);
+}
+
+.panel-footer {
+  background: var(--card);
+  border-top: 1px solid var(--border);
+  border-bottom-left-radius: calc(var(--radius) - 1px);
+  border-bottom-right-radius: calc(var(--radius) - 1px);
+}
+
+/* ─── Durum panelleri ────────────────────────────────── */
+
+.panel-danger  { --tone: var(--danger); }
+.panel-warning { --tone: var(--warning); }
+.panel-info    { --tone: var(--info); }
+.panel-success { --tone: var(--success); }
+
+.panel-danger, .panel-warning, .panel-info, .panel-success {
+  border-color: color-mix(in oklab, var(--tone) 35%, var(--border));
+}
+
+.panel-danger > .panel-heading,
+.panel-warning > .panel-heading,
+.panel-info > .panel-heading,
+.panel-success > .panel-heading {
+  background: color-mix(in oklab, var(--tone) 10%, var(--card));
+  color: var(--tone);
+  border-color: color-mix(in oklab, var(--tone) 25%, var(--border));
+}
+
+.panel-danger .panel-icon, .panel-warning .panel-icon,
+.panel-info .panel-icon, .panel-success .panel-icon {
+  color: var(--tone);
+}
+
+/* ─── Tablolar ───────────────────────────────────────── */
+
+.table {
+  color: var(--card-foreground);
+}
+
+.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th,
+.table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+  border-top-color: var(--border);
+}
+
+.table > thead > tr > th {
+  border-bottom-color: var(--border);
+}
+
+/* Anahtar-değer tablolarında anahtar geri çekilmiş, değer öne çıkıyor. */
+.table th {
+  color: var(--muted-foreground);
+  font-weight: 500;
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) {
+  background: color-mix(in oklab, var(--muted) 45%, transparent);
+}
+
+.table-hover > tbody > tr:hover {
+  background: var(--muted);
+}
+
+.list-group-item {
+  background: var(--card);
+  color: var(--card-foreground);
+  border-color: var(--border);
+}
+
+/* ─── Upstream'e özgü parçalar ───────────────────────── */
+
+.identicon rect {
+  fill: var(--foreground);
+}
+
+.panel-warning .identicon rect,
+.panel-danger .identicon rect {
+  fill: var(--tone);
+}
+
+.li-column {
+  background: var(--muted);
+  border-radius: calc(var(--radius) * 0.6);
+}
+
+/* Bağlantı türü ikonları sabit renkli SVG; açık zeminde koyulaştırılıyor,
+   koyu zeminde tersine çevriliyor. */
+.reception {
+  filter: invert(12%) sepia(11%) saturate(20%) hue-rotate(318deg) brightness(100%) contrast(80%);
+}
+
+@media (prefers-color-scheme: dark) {
+  .reception { filter: invert(90%); }
+}

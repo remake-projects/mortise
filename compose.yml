@@ -26,6 +26,9 @@ services:
     environment:
       PUID: ${PUID:-1000}
       PGID: ${PGID:-1000}
+      # Arayüz katmanı: motor bu dizindeki dosyaları binary'ye gömülü
+      # olanların yerine sunuyor (dosya bazında). Mortise'ın arayüz fork'u.
+      STGUIASSETS: /var/syncthing/gui
 
     # Sağdaki yollar motorun kendi sözleşmesi (imajda STHOMEDIR/HOME) —
     # fork'a kadar sabit. Soldaki, Mortise'ın sunucudaki yerleşimi.
@@ -36,6 +39,9 @@ services:
       - ${MORTISE_HOME:?.env icinde MORTISE_HOME tanimli olmali}/config:/var/syncthing/config
       # Senkronlanan vault'lar.
       - ${MORTISE_HOME}/data:/var/syncthing/data
+      # Arayüz fork'u doğrudan depodan, salt okunur: `git pull` sonrası
+      # yeni arayüz için yeniden başlatma gerekmez, sayfa yenilemek yeter.
+      - ./gui:/var/syncthing/gui:ro
 
     ports:
       # GUI: yalnızca localhost. Erişim SSH tüneliyle — scripts/tunnel.sh

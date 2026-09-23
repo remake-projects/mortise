@@ -1,0 +1,127 @@
+/*
+ * Üst bar — hub'ın Topbar bileşeninin dili: yapışkan, ince alt kenarlık,
+ * yarı saydam zemin üstünde bulanıklık, 59px yükseklik. Menüler gri
+ * dikdörtgen değil; üstüne gelinince beliren yumuşak köşeli bir zemin.
+ */
+
+.navbar-top.navbar-default {
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+  min-height: var(--topbar-h);
+  margin-bottom: 0;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  border-radius: 0;
+  background: color-mix(in oklab, var(--background) 80%, transparent);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  box-shadow: none;
+}
+
+/* ─── Marka ──────────────────────────────────────────── */
+
+.navbar-default .navbar-brand.mortise-brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  height: var(--topbar-h);
+  padding: 0 15px;
+  color: var(--foreground);
+}
+
+.mortise-mark {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+/* Hub'ın kenar çubuğundaki "re:make hub" yazısıyla aynı ölçü: mono, 16px,
+   sıkı aralık. */
+.mortise-wordmark {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+/* Cihaz adı markanın yanında, geri çekilmiş: nerede olunduğunu söylüyor,
+   markayla yarışmıyor. İnce bir ayraç ikisini ayırıyor. */
+.navbar-default .navbar-text {
+  display: flex;
+  align-items: center;
+  height: var(--topbar-h);
+  margin: 0;
+  padding-left: 14px;
+  color: var(--muted-foreground);
+  font-size: 13px;
+  font-family: var(--font-mono);
+}
+
+.navbar-default .navbar-text::before {
+  content: "";
+  width: 1px;
+  height: 16px;
+  margin-right: 14px;
+  background: var(--border);
+}
+
+/* ─── Menü düğmeleri ─────────────────────────────────── */
+
+.navbar-default .navbar-nav > li > a {
+  margin: calc((var(--topbar-h) - 32px) / 2) 1px;
+  padding: 6px 10px;
+  line-height: 20px;
+  border-radius: var(--radius);
+  color: var(--muted-foreground);
+  font-size: 13px;
+  font-weight: 500;
+  transition: color 180ms ease, background-color 180ms ease;
+}
+
+.navbar-default .navbar-nav > li > a:hover,
+.navbar-default .navbar-nav > li > a:focus,
+.navbar-default .navbar-nav > .open > a,
+.navbar-default .navbar-nav > .open > a:hover,
+.navbar-default .navbar-nav > .open > a:focus {
+  color: var(--foreground);
+  background: var(--muted);
+}
+
+.navbar-default .navbar-nav > li > a .caret {
+  opacity: 0.6;
+}
+
+.navbar-default .navbar-btn {
+  margin-top: calc((var(--topbar-h) - 30px) / 2);
+  margin-bottom: 0;
+}
+
+.navbar-fixed-bottom {
+  background: color-mix(in oklab, var(--background) 85%, transparent);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid var(--border);
+}
+
+/* Dar ekranda menüler yan yana sığmıyor ve Bootstrap onları alt alta
+   diziyor; üst barın yüksekliği korunsun diye satırda tutuluyor. */
+@media (max-width: 767px) {
+  .navbar-top .navbar-nav {
+    display: flex;
+    margin: 0;
+    float: right;
+  }
+  .navbar-top .navbar-nav > li > a {
+    padding: 6px 8px;
+  }
+  .navbar-top .navbar-nav .open .dropdown-menu {
+    position: absolute;
+    right: 0;
+    left: auto;
+    background: var(--popover);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-overlay);
+  }
+}

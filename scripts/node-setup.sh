@@ -62,7 +62,16 @@ else
 fi
 echo "==> home   : $NODE_HOME"
 
-# 2) LaunchAgent — login'de açılır, çökerse yeniden başlar
+# 2) Arayüz katmanı. Motor, STGUIASSETS dizinindeki dosyaları binary'ye
+#    gömülü olanların yerine sunuyor (dosya bazında). Depodan kopyalanıyor,
+#    doğrudan depoya işaret edilmiyor: depo taşınır ya da silinirse düğümün
+#    arayüzü sessizce upstream'e dönmesin. Güncellemek için bu script
+#    yeniden çalıştırılır.
+mkdir -p "$NODE_HOME/gui"
+rsync -a --delete "$REPO/gui/" "$NODE_HOME/gui/"
+echo "==> arayüz : $NODE_HOME/gui"
+
+# 3) LaunchAgent — login'de açılır, çökerse yeniden başlar
 mkdir -p "$HOME/Library/LaunchAgents"
 cat > "$PLIST" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
@@ -78,6 +87,14 @@ cat > "$PLIST" <<PLIST
     <string>--no-browser</string>
     <string>--no-restart</string>
   </array>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>STGUIASSETS</key><string>$NODE_HOME/gui</string>
+    <!-- Motor kendini upstream'in son sürümüne yükseltmesin: sürüm hub ile
+         aynı tutuluyor (.env.example), ve yükseltme penceresi upstream'in
+         sürüm notlarına açılıyor. Sürüm bu script'le değiştirilir. -->
+    <key>STNOUPGRADE</key><string>1</string>
+  </dict>
   <key>RunAtLoad</key><true/>
   <key>KeepAlive</key><true/>
   <key>StandardOutPath</key><string>$NODE_HOME/logs/node.log</string>
@@ -90,7 +107,7 @@ launchctl unload "$PLIST" 2> /dev/null || true
 launchctl load "$PLIST"
 echo "==> servis : $LABEL (login'de otomatik açılır)"
 
-# 3) API'nin ayağa kalkmasını bekle. İlk denemeler servis açılana kadar
+# 4) API'nin ayağa kalkmasını bekle. İlk denemeler servis açılana kadar
 #    başarısız olur; sessiz tutulup sonuç tek satırda bildiriliyor.
 if curl -fs --retry 30 --retry-delay 1 --retry-connrefused --retry-all-errors \
      -o /dev/null "http://$GUI/rest/noauth/health"; then
@@ -100,7 +117,7 @@ else
   exit 1
 fi
 
-# 4) Porta cevap veren gerçekten bizim düğümümüz mü? Makinede 8384'ü tutan
+# 5) Porta cevap veren gerçekten bizim düğümümüz mü? Makinede 8384'ü tutan
 #    başka bir senkron kurulumu varsa bizimki hiç açılamaz ve aşağıdaki
 #    ayarlar yanlış yere uygulanırdı.
 MINE="$("$BIN" device-id --home="$NODE_HOME/config")"
@@ -113,7 +130,7 @@ if [ "$MINE" != "$SERVING" ]; then
   exit 1
 fi
 
-# 5) Mortise varsayılanları — hub'dakiyle aynı script. Klasör yolu burada
+# 6) Mortise varsayılanları — hub'dakiyle aynı script. Klasör yolu burada
 #    container değil, düğümün kendi data dizini.
 MORTISE_CONFIG="$NODE_HOME/config/config.xml" \
 MORTISE_API="http://$GUI" \

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <!-- Sekme ikonu, durum: notify. Sekme çubuğu koyu olabileceği için işaret
+       renk şemasına göre açılıp koyulaşıyor. -->
+  <style>
+    .m { fill: #1b1b1b; } .dot { fill: oklch(0.72 0.14 75); }
+    @media (prefers-color-scheme: dark) { .m { fill: #f0efeb; } }
+  </style>
+  <path class="m" fill-rule="evenodd" d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm3.5 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1h-3z"/>
+  <circle cx="19" cy="19" r="4.25" class="dot"/>
+</svg>

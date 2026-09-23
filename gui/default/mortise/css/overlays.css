@@ -1,0 +1,216 @@
+/*
+ * Üstte açılanlar — modallar, açılır menüler, ipuçları, balonlar, tarih
+ * seçici, dosya ağacı.
+ *
+ * Hub'ın popover dili: kart zemini, ince kenarlık, yumuşak ve geniş bir
+ * gölge. Upstream modallar başlığı durum rengiyle tamamen boyuyor; burada
+ * başlık nötr kalıyor, durumu yalnızca ikon söylüyor.
+ */
+
+/* ─── Açılır menüler ─────────────────────────────────── */
+
+.dropdown-menu {
+  background: var(--popover);
+  color: var(--popover-foreground);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-overlay);
+  padding: 4px;
+  font-size: 13px;
+}
+
+.dropdown-menu > li > a {
+  color: var(--popover-foreground);
+  border-radius: calc(var(--radius) * 0.6);
+  padding: 6px 10px;
+}
+
+.dropdown-menu > li > a:hover,
+.dropdown-menu > li > a:focus {
+  background: var(--accent);
+  color: var(--accent-foreground);
+}
+
+.dropdown-menu > .active > a,
+.dropdown-menu > .active > a:hover,
+.dropdown-menu > .active > a:focus {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+
+.dropdown-menu .divider {
+  background: var(--border);
+  margin: 4px -4px;
+}
+
+.dropdown-menu .fa, .dropdown-menu .fas, .dropdown-menu .far {
+  color: var(--muted-foreground);
+}
+
+.dropdown-header {
+  color: var(--muted-foreground);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* ─── Modallar ───────────────────────────────────────── */
+
+.modal-backdrop.in {
+  opacity: 0.4;
+}
+
+.modal-content {
+  background: var(--card);
+  color: var(--card-foreground);
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) * 1.4);
+  box-shadow: var(--shadow-overlay);
+}
+
+/* Upstream başlığa `alert alert-<durum>` sınıfı verip tamamen boyuyor.
+   Başlık nötr, durum ikonda. */
+.modal-header,
+.modal-header.alert {
+  background: transparent;
+  color: var(--foreground);
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  border-radius: calc(var(--radius) * 1.4) calc(var(--radius) * 1.4) 0 0;
+  margin-bottom: 0;
+  padding: 14px 20px;
+}
+
+.modal-title {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.modal-header .panel-icon { color: var(--muted-foreground); }
+.modal-header.alert-danger .panel-icon  { color: var(--danger); }
+.modal-header.alert-warning .panel-icon { color: var(--warning); }
+.modal-header.alert-info .panel-icon    { color: var(--info); }
+.modal-header.alert-success .panel-icon { color: var(--success); }
+
+.modal-body {
+  padding: 20px;
+}
+
+.modal-footer {
+  border-top: 1px solid var(--border);
+  padding: 12px 20px;
+}
+
+/* ─── İpuçları ve balonlar ───────────────────────────── */
+
+.tooltip-inner {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border-radius: calc(var(--radius) * 0.8);
+  font-size: 12px;
+  padding: 5px 9px;
+}
+
+.tooltip.top .tooltip-arrow    { border-top-color: var(--primary); }
+.tooltip.bottom .tooltip-arrow { border-bottom-color: var(--primary); }
+.tooltip.left .tooltip-arrow   { border-left-color: var(--primary); }
+.tooltip.right .tooltip-arrow  { border-right-color: var(--primary); }
+
+.popover {
+  background: var(--popover);
+  color: var(--popover-foreground);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-overlay);
+  font-family: var(--font-sans);
+}
+
+.popover-title {
+  background: var(--muted);
+  border-bottom-color: var(--border);
+  border-radius: calc(var(--radius) - 1px) calc(var(--radius) - 1px) 0 0;
+}
+
+.popover.top > .arrow        { border-top-color: var(--border); }
+.popover.top > .arrow::after { border-top-color: var(--popover); }
+.popover.bottom > .arrow        { border-bottom-color: var(--border); }
+.popover.bottom > .arrow::after { border-bottom-color: var(--popover); }
+.popover.left > .arrow        { border-left-color: var(--border); }
+.popover.left > .arrow::after { border-left-color: var(--popover); }
+.popover.right > .arrow        { border-right-color: var(--border); }
+.popover.right > .arrow::after { border-right-color: var(--popover); }
+
+/* ─── Tarih seçici (sürüm geri yükleme) ──────────────── */
+
+.daterangepicker {
+  background: var(--popover);
+  color: var(--popover-foreground);
+  border-color: var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-overlay);
+}
+
+.daterangepicker .calendar-table {
+  background: var(--popover);
+  border-color: var(--popover);
+}
+
+.daterangepicker td.off, .daterangepicker td.off.in-range {
+  background: transparent;
+  color: var(--muted-foreground);
+}
+
+.daterangepicker td.available:hover, .daterangepicker th.available:hover {
+  background: var(--muted);
+}
+
+.daterangepicker td.in-range {
+  background: var(--muted);
+  color: var(--foreground);
+}
+
+.daterangepicker td.active, .daterangepicker td.active:hover {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+
+.daterangepicker .ranges li:hover {
+  background: var(--muted);
+}
+
+.daterangepicker .ranges li.active {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+
+/* ─── Dosya ağacı (sürüm geri yükleme, ignore düzenleyici) ─ */
+
+.fancytree-container tr:hover,
+.fancytree-focused {
+  background: var(--muted);
+}
+
+table.fancytree-ext-table tbody tr.fancytree-active,
+table.fancytree-ext-table tbody tr.fancytree-selected {
+  background: color-mix(in oklab, var(--info) 14%, transparent);
+}
+
+/* ─── Hakkında penceresi ─────────────────────────────── */
+
+.mortise-about-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 8px 0 16px;
+  color: var(--foreground);
+}
+
+.mortise-about-brand .mortise-mark {
+  width: 36px;
+  height: 36px;
+}
+
+.mortise-about-brand .mortise-wordmark {
+  font-size: 30px;
+}

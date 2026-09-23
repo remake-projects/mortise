@@ -7,5 +7,15 @@
 
 */
 
-@import "../../theme-assets/dark/assets/css/theme.css" screen and (prefers-color-scheme: dark);
-@import "../../theme-assets/light/assets/css/theme.css" (prefers-color-scheme: light), (prefers-color-scheme: no-preference);
+/*
+ * Mortise fork'u: bilerek boş.
+ *
+ * Upstream'in varsayılan teması burada açık ve koyu tema dosyalarını
+ * işletim sistemi tercihine göre içe aktarıyordu. Mortise'ın kendi açık/koyu
+ * modu var (mortise/css/tokens.css) ve bütün renkler token'lardan geliyor;
+ * upstream'in koyu teması yüklenseydi kendi sabit renkleriyle token'larla
+ * özgüllük yarışına girerdi. Bu yüzden varsayılan tema hiçbir şey yüklemiyor.
+ *
+ * Ayarlardan upstream'in "dark"/"light"/"black" temaları seçilirse onlar
+ * yine yüklenir — o seçim bilinçli bir tercih sayılıyor.
+ */
